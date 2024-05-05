@@ -5,9 +5,7 @@ use crate::grouper::Grouper;
 
 const DAY01_INPUT: &'static str = include_str!(r"..\input\day02.txt");
 
-#[derive(PartialEq, Eq)]
-#[derive(Hash)]
-#[derive(Debug)] 
+#[derive(PartialEq, Eq, Hash)]
 enum Color {
     Red,
     Green,
