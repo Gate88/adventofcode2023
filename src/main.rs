@@ -1,4 +1,5 @@
 mod day01;
+mod day02;
 
 fn main() {
     main_d02();
@@ -13,5 +14,8 @@ fn main_d01() {
 }
 
 fn main_d02() {
-
+    let p1 = day02::part1();
+    println!("part1: {p1}");
+    let p2 = day02::part2();
+    println!("part2: {p2}");
 }

@@ -1,6 +1,6 @@
 use regex::Regex;
 
-pub const DAY01_INPUT: &'static str = include_str!(r"..\input\day01.txt");
+const DAY01_INPUT: &'static str = include_str!(r"..\input\day01.txt");
 
 pub fn part1() -> i32 {
     let input = DAY01_INPUT;
