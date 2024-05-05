@@ -56,8 +56,8 @@ fn get_games(input: &str) -> Vec<Game> {
     }).collect()
 }
 
-pub fn part1() -> i64 {
-    get_games(DAY02_INPUT).iter().map(|g| {
+pub fn part1() {
+    let p1: i64 = get_games(DAY02_INPUT).iter().map(|g| {
         for pick in g.turns.iter().map(|t| &t.picks).flatten() {
             match pick.color {
                 Color::Red if pick.count > 12 => return 0,
@@ -67,13 +67,16 @@ pub fn part1() -> i64 {
             }
         }
         return g.id;
-    }).sum()
+    }).sum();
+    println!("part1: {p1}");
 }
 
-pub fn part2() -> i64 {
-    get_games(DAY02_INPUT).iter().map(|g| {
+pub fn part2() {
+    let p2 :i64 = get_games(DAY02_INPUT).iter().map(|g| {
         g.turns.iter().map(|t| &t.picks).flatten().group_by(|p| &p.color).into_iter().map(|g| {
             g.1.into_iter().map(|p| p.count).max().unwrap()
         }).product::<i64>()
-    }).sum()
+    }).sum();
+
+    println!("part2: {p2}");
 }
