@@ -1,14 +1,24 @@
+use std::env::args;
+
 mod day01;
 mod day02;
 mod day03;
 mod grouper;
 
 fn main() {
-    main_d03()
+    let s = args().nth(1).unwrap_or("03".to_owned());
+    println!("Day{s}:");
+    match s.as_str() {
+        "01" => main_d01(),
+        "02" => main_d02(),
+        "03" => main_d03(),
+        _ => panic!("not a valid day")
+    };
 }
 
 fn main_d03() {
-    day03::part1()
+    day03::part1();
+    day03::part2();
 }
 
 #[allow(dead_code)]

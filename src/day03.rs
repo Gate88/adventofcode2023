@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 const DAY03_INPUT: &str = include_str!(r"..\input\day03.txt");
 
 struct EngineSchematic {
@@ -8,9 +10,15 @@ struct EngineSchematic {
 
 struct Part {
     id: i32,
-    _start_x: i32,
-    _end_x: i32,
-    _y: i32,
+    start_x: i32,
+    end_x: i32,
+    y: i32,
+}
+
+struct Gear <'a>{
+    _pos: (i32, i32),
+    ratio: i32,
+    adjacent_parts: Vec<&'a Part>
 }
 
 impl EngineSchematic {
@@ -38,12 +46,16 @@ impl EngineSchematic {
         self._get_with_index(self.to_index(x, y))
     }
 
+    fn get_with_pos(&self, pos: &(i32, i32)) -> &char {
+        return self.get(pos.0, pos.1)
+    }
+
     fn _get_with_index(&self, i: i32) -> &char {
         if i < 0 { return &'.' };
         self.data.get(i as usize).unwrap_or(&'.')
     }
 
-    fn to_part_iter(&self) -> impl Iterator<Item = Part> {
+    fn get_parts(&self) -> Vec<Part> {
         let mut result: Vec<Part> = Vec::new();
         let mut start_x = -1;
 
@@ -60,30 +72,54 @@ impl EngineSchematic {
                 if self.check_is_part(start_x, x, y) {
                     result.push(Part {
                         id: self.get_id(start_x, x, y),
-                        _start_x: start_x,
-                        _end_x: i,
-                        _y: y
+                        start_x,
+                        end_x: x,
+                        y
                     });
                 }
                 start_x = -1
             }
         }
 
-        result.into_iter()
+        result
+    }
+
+    fn get_gears<'a>(&self, parts: &'a Vec<Part>) -> Vec<Gear<'a>> {
+        let mut result: HashMap<(i32,i32),Gear> = HashMap::new();
+        for part in parts {
+            for pos in self.adjacent_positions(part.start_x, part.end_x, part.y).filter(|pos| is_gear(self.get_with_pos(pos))) {
+                if let Some(gear) = result.get_mut(&pos) {
+                    gear.adjacent_parts.push(&part);
+                } else {
+                    result.insert(pos, Gear {
+                        _pos: pos,
+                        ratio: -1,
+                        adjacent_parts: vec![&part]
+                    });
+                }
+            }
+        }
+        for gear in result.values_mut() {
+            if gear.adjacent_parts.len() == 2 {
+                gear.ratio = gear.adjacent_parts[0].id * gear.adjacent_parts[1].id
+            }
+        }
+        result.into_values().filter(|g| g.adjacent_parts.len() == 2).collect()
     }
 
     fn check_is_part(&self, start_x: i32, end_x: i32, y: i32) -> bool {
+        self.adjacent_positions(start_x, end_x, y).any(|pos| is_symbol(self.get(pos.0, pos.1)))
+    }
+
+    fn adjacent_positions(&self, start_x: i32, end_x: i32, y: i32) -> impl Iterator<Item = (i32, i32)> {
+        let mut result = Vec::new();
         for x in start_x - 1..=end_x + 1 {
-            // check above and below
-            if is_symbol(self.get(x, y-1)) || is_symbol(self.get(x, y+1)) {
-                return true
-            }
+            result.push((x, y -1));
+            result.push((x, y + 1));
         }
-        //check same line
-        if is_symbol(self.get(start_x-1, y)) || is_symbol(self.get(end_x+1, y)) {
-            return true
-        }
-        return false
+        result.push((start_x - 1, y));
+        result.push((end_x + 1, y));
+        result.into_iter()
     }
 
     fn get_id(&self, start_x: i32, end_x: i32, y: i32) -> i32 {
@@ -116,7 +152,18 @@ fn is_symbol(c: &char) -> bool {
     !is_digit(c) && *c != '.'
 }
 
+fn is_gear(c: &char) -> bool {
+    *c == '*'
+}
+
 pub fn part1() {
-    let p1: i32 = EngineSchematic::new(DAY03_INPUT).to_part_iter().map(|p| p.id).sum();
-    println!("{p1}");
+    let p1: i32 = EngineSchematic::new(DAY03_INPUT).get_parts().into_iter().map(|p| p.id).sum();
+    println!("part1: {p1}");
+}
+
+pub fn part2() {
+    let es = EngineSchematic::new(DAY03_INPUT);
+    let parts = es.get_parts();
+    let p2: i32 = es.get_gears(&parts).into_iter().map(|g| g.ratio).sum();
+    println!("part2: {p2}");
 }
