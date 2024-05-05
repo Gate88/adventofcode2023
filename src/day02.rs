@@ -75,28 +75,31 @@ pub fn part1() -> i64 {
 
 pub fn part2() -> i64 {
     get_games(DAY01_INPUT).iter().map(|g| {
-        let groups = group_by(g.turns.iter().map(|t| &t.picks).flatten(),|p| &p.color);
-        groups.into_iter().map(|g| {
+        g.turns.iter().map(|t| &t.picks).flatten().group_by(|p| &p.color).into_iter().map(|g| {
             g.1.into_iter().map(|p| p.count).max().unwrap()
         }).product::<i64>()
     }).sum()
 }
 
-fn group_by<K, V, I, F>(i: I, mut f: F) -> HashMap<K, Vec<V>>
-where
-    K: Eq + Hash,
-    I: IntoIterator<Item = V> + Sized,
-    F: FnMut(&I::Item) -> K
-{
-    let mut result = HashMap::<K, Vec<V>>::new();
-    for item in i {
-        let key = f(&item);
-        if result.get(&key).is_none() {
-            result.insert(key, vec![item]);
-        } else {
-            result.get_mut(&key).unwrap().push(item)
+pub trait Grouper: IntoIterator {
+    fn group_by<K, V, F>(self, mut f: F) -> HashMap<K, Vec<V>>
+    where
+        K: Eq + Hash,
+        Self: IntoIterator<Item = V> + Sized,
+        F: FnMut(&Self::Item) -> K,
+    {
+        let mut result: HashMap<K, Vec<V>> = HashMap::new();
+        for item in self {
+            let key = f(&item);
+            if result.get(&key).is_none() {
+                result.insert(key, vec![item]);
+            } else {
+                result.get_mut(&key).unwrap().push(item)
+            }
         }
+    
+        result
     }
-
-    result
 }
+
+impl<T> Grouper for T where T: IntoIterator {}
