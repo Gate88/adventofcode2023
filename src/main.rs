@@ -1,5 +1,6 @@
 mod day01;
 mod day02;
+mod grouper;
 
 fn main() {
     main_d02();
