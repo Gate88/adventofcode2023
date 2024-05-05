@@ -3,7 +3,7 @@ use regex::Regex;
 use crate::grouper::Grouper;
 
 
-const DAY01_INPUT: &'static str = include_str!(r"..\input\day02.txt");
+const DAY02_INPUT: &str = include_str!(r"..\input\day02.txt");
 
 #[derive(PartialEq, Eq, Hash)]
 enum Color {
@@ -57,7 +57,7 @@ fn get_games(input: &str) -> Vec<Game> {
 }
 
 pub fn part1() -> i64 {
-    get_games(DAY01_INPUT).iter().map(|g| {
+    get_games(DAY02_INPUT).iter().map(|g| {
         for pick in g.turns.iter().map(|t| &t.picks).flatten() {
             match pick.color {
                 Color::Red if pick.count > 12 => return 0,
@@ -71,7 +71,7 @@ pub fn part1() -> i64 {
 }
 
 pub fn part2() -> i64 {
-    get_games(DAY01_INPUT).iter().map(|g| {
+    get_games(DAY02_INPUT).iter().map(|g| {
         g.turns.iter().map(|t| &t.picks).flatten().group_by(|p| &p.color).into_iter().map(|g| {
             g.1.into_iter().map(|p| p.count).max().unwrap()
         }).product::<i64>()
