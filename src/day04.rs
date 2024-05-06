@@ -16,14 +16,6 @@ struct Card {
     picked_numbers: HashSet<i32>,
 }
 
-fn hashset_from_numbers(s: &str) -> HashSet<i32> {
-    NUM_RE.find_iter(s)
-        .map(|s| {
-            s.as_str().parse::<i32>().unwrap()
-        })
-        .collect()
-}
-
 impl Card {
     fn all_cards(input: &str) -> Vec<Card> {
         input.lines().map(|l| Card::new(l)).collect()
@@ -70,3 +62,12 @@ fn chain_cards(cards: &Vec<Card>) -> usize {
     }
     used
 }
+
+fn hashset_from_numbers(s: &str) -> HashSet<i32> {
+    NUM_RE.find_iter(s)
+        .map(|s| {
+            s.as_str().parse::<i32>().unwrap()
+        })
+        .collect()
+}
+
