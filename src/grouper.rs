@@ -5,7 +5,7 @@ pub trait Grouper: IntoIterator {
     where
         K: Eq + Hash,
         Self: IntoIterator<Item = V> + Sized,
-        F: FnMut(&Self::Item) -> K,
+        F: FnMut(&V) -> K,
     {
         let mut result: HashMap<K, Vec<V>> = HashMap::new();
         for item in self {
