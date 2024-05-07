@@ -137,10 +137,8 @@ impl <'a> Ord for Hand<'a> {
         match self.get_hand_type().cmp(&other.get_hand_type()) {
             o @ (Greater | Less) => o,
             Equal => {
-                let s = self.cards.chars();
-                let o = other.cards.chars();
-                for (s, o) in s.zip(o) {
-                    let cmp = card_strength(&s, self.joker_mode).cmp(&card_strength(&o, other.joker_mode));
+                for (self_card, other_card) in self.cards.chars().zip(other.cards.chars()) {
+                    let cmp = card_strength(&self_card, self.joker_mode).cmp(&card_strength(&other_card, other.joker_mode));
                     if cmp != Equal { return cmp }
                 }
                 Equal
