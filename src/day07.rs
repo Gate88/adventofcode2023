@@ -59,20 +59,8 @@ impl Hand {
         let card_type_groups = self.get_card_type_groups();
         match card_type_groups.len() {
             1 => FiveOfAKind,
-            2 => {
-                //number of cards in first group
-                match card_type_groups.values().nth(0).unwrap() {
-                    1 | 4 => FourOfAKind,
-                    _ => FullHouse,
-                }
-            },
-            3 => {
-                for group_card_count in card_type_groups.values() {
-                    if *group_card_count == 3 { return ThreeOfAKind }
-                    if *group_card_count == 2 { return TwoPair }
-                }
-                panic!("impossible state");
-            },
+            2 => if let Some(1 | 4) = card_type_groups.values().next() { FourOfAKind } else { FullHouse }
+            3 => if *card_type_groups.values().find(|&&n| n == 3 || n == 2).unwrap() == 3 { ThreeOfAKind } else { TwoPair }
             4 => OnePair,
             _ => HighCard,
         }
@@ -85,18 +73,13 @@ impl Hand {
         let card_type_groups = self.get_card_type_groups();
         let joker_count = *card_type_groups.get(&JOKER).unwrap_or(&0);
         let non_joker_groups: HashMap<&char, u32> = card_type_groups.into_iter()
-            .filter(|i| i.0 != &JOKER).collect();
+            .filter(|(&c, _)| c != JOKER).collect();
 
         match joker_count {
             0 => self.get_hand_type_with_joker_mode(false),
             _ => match non_joker_groups.len() {
                 0 | 1 => FiveOfAKind,
-                2 => {
-                    for group_card_count in non_joker_groups.values() {
-                        if group_card_count + joker_count == 4 { return FourOfAKind }
-                    }
-                    FullHouse
-                },
+                2 => if non_joker_groups.values().any(|n| n + joker_count == 4) { FourOfAKind } else { FullHouse },
                 3 => ThreeOfAKind,
                 _ => OnePair,
             }
