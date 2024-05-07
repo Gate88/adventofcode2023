@@ -16,18 +16,21 @@ enum HandType {
     FiveOfAKind = 6,
 }
 
-struct Hand<'a> {
-    cards: &'a str,
+struct Hand {
+    cards: [char; 5],
     bid: usize,
     joker_mode: bool,
 }
 
-impl<'a> Hand<'a> {
-    fn new(line: &'a str, joker_mode: bool) -> Self {
+impl Hand {
+    fn new(line: &str, joker_mode: bool) -> Self {
         let mut items = line.split(" ");
-        let cards = items.next().expect("could not find cards");
-        assert!(cards.chars().count() == 5, "hand must have exactly 5 cards");
+
+        let cards: [char; 5] = items.next().expect("could not find cards")
+            .chars().collect::<Vec<char>>().try_into().expect("wrong number of cards");
+
         let bid = items.next().expect("could not find bid").parse().expect("could not parse bid");
+
         Hand {
             cards,
             bid,
@@ -39,18 +42,21 @@ impl<'a> Hand<'a> {
         self.get_hand_type_with_joker_mode(self.joker_mode)
     }
 
+    //Group<card character, card count>
+    fn get_card_type_groups(&self) -> HashMap<&char, u32> {
+        self.cards.iter()
+            .fold(HashMap::new(), |mut h, c| {
+                *h.entry(c).or_insert_with(|| 0) += 1;
+                return h
+            })
+    }
+
     fn get_hand_type_with_joker_mode(&self, joker_mode: bool) -> HandType {
         use HandType::*;
 
         if joker_mode { return self.get_hand_type_with_joker_mode_on() }
         
-        //HashMap<card, card_count>
-        let card_type_groups = self.cards.chars()
-            .fold(HashMap::new(), |mut h, c| {
-                *h.entry(c).or_insert_with(|| 0) += 1;
-                return h
-            });
-
+        let card_type_groups = self.get_card_type_groups();
         match card_type_groups.len() {
             1 => FiveOfAKind,
             2 => {
@@ -76,15 +82,10 @@ impl<'a> Hand<'a> {
         use HandType::*;
 
         //HashMap<card, card_count>
-        let card_type_groups = self.cards.chars()
-            .fold(HashMap::new(), |mut h, c| {
-                *h.entry(c).or_insert_with(|| 0) += 1;
-                return h
-            });
-
+        let card_type_groups = self.get_card_type_groups();
         let joker_count = *card_type_groups.get(&JOKER).unwrap_or(&0);
-        let non_joker_groups: HashMap<char, usize> = card_type_groups.into_iter()
-            .filter(|i| i.0 != JOKER).collect();
+        let non_joker_groups: HashMap<&char, u32> = card_type_groups.into_iter()
+            .filter(|i| i.0 != &JOKER).collect();
 
         match joker_count {
             0 => self.get_hand_type_with_joker_mode(false),
@@ -104,15 +105,15 @@ impl<'a> Hand<'a> {
 
 }
 
-impl <'a> PartialEq for Hand<'a> {
+impl PartialEq for Hand {
     fn eq(&self, other: &Self) -> bool {
         self.cards == other.cards
     }
 }
 
-impl <'a> Eq for Hand<'a> {}
+impl Eq for Hand {}
 
-impl <'a> PartialOrd for Hand<'a> {
+impl PartialOrd for Hand {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
@@ -131,14 +132,14 @@ fn card_strength(c: &char, joker_mode: bool) -> u32 {
     }
 }
 
-impl <'a> Ord for Hand<'a> {
+impl Ord for Hand {
     fn cmp(&self, other: &Self) -> Ordering {
         use Ordering::*;
         assert!(self.joker_mode == other.joker_mode, "hands must be in same joker mode to be compared");
         match self.get_hand_type().cmp(&other.get_hand_type()) {
             o @ (Greater | Less) => o,
             Equal => {
-                for (self_card, other_card) in self.cards.chars().zip(other.cards.chars()) {
+                for (self_card, other_card) in self.cards.iter().zip(other.cards.iter()) {
                     let cmp = card_strength(&self_card, self.joker_mode).cmp(&card_strength(&other_card, other.joker_mode));
                     if cmp != Equal { return cmp }
                 }
