@@ -5,10 +5,11 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
+mod day06;
 mod grouper;
 
 fn main() {
-    let s = args().nth(1).unwrap_or("5".to_owned());
+    let s = args().nth(1).unwrap_or("6".to_owned());
     println!("== Day{s} ==");
     match s.as_str() {
         "1" => main_d01(),
@@ -16,8 +17,14 @@ fn main() {
         "3" => main_d03(),
         "4" => main_d04(),
         "5" => main_d05(),
+        "6" => main_d06(),
         _ => panic!("not a valid day")
     };
+}
+
+fn main_d06() {
+    day06::part1();
+    day06::part2();
 }
 
 fn main_d05() {
