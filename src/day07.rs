@@ -23,16 +23,16 @@ struct Hand<'a> {
 }
 
 impl<'a> Hand<'a> {
-    fn new(line: &'a str, joker_mode: bool) -> Option<Self> {
+    fn new(line: &'a str, joker_mode: bool) -> Self {
         let mut items = line.split(" ");
-        let cards = items.next()?;
+        let cards = items.next().expect("could not find cards");
         assert!(cards.chars().count() == 5, "hand must have exactly 5 cards");
-        let bid = items.next()?.parse().ok()?;
-        Some(Hand {
+        let bid = items.next().expect("could not find bid").parse().expect("could not parse bid");
+        Hand {
             cards,
             bid,
             joker_mode,
-        })
+        }
     }
 
     fn get_hand_type(&self) -> HandType {
@@ -149,7 +149,7 @@ impl <'a> Ord for Hand<'a> {
 }
 
 fn get_hands(input: &str, joker_mode: bool) -> Vec<Hand> {
-    input.lines().filter_map(|l| Hand::new(l, joker_mode)).collect()
+    input.lines().map(|l| Hand::new(l, joker_mode)).collect()
 }
 
 fn calc_winnings(mut hands: Vec<Hand>) -> usize {
