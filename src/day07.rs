@@ -1,9 +1,10 @@
 use std::{cmp::Ordering, collections::HashMap};
-
 use crate::grouper::Grouper;
 
 const _DAY07_SIMPLE_INPUT: &str = include_str!(r"..\input\day07_simple.txt");
 const DAY07_INPUT: &str = include_str!(r"..\input\day07.txt");
+
+const JOKER: char = 'J';
 
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 enum HandType {
@@ -30,7 +31,7 @@ fn strength(c: &char, joker_mode: bool) -> u8 {
         'Q' => 12,
         'K' => 13,
         'A' => 14,
-        _ => panic!("unknown card: {}", c)
+        _ => panic!("unknown card: {c}")
     }
 }
 
@@ -52,46 +53,51 @@ impl<'a> Hand<'a> {
     }
 
     fn get_hand_type_with_joker_mode(&self, joker_mode: bool) -> HandType {
-        if joker_mode { return self.get_hand_type_with_joker_on() }
+        use HandType::*;
+
+        if joker_mode { return self.get_hand_type_with_joker_mode_on() }
         
         let card_type_groups = self.cards.chars().group_by(|i| i.clone());
         match card_type_groups.keys().len() {
-            1 => HandType::FiveOfAKind,
+            1 => FiveOfAKind,
             2 => {
                 match card_type_groups.values().nth(0).unwrap().len() {
-                    1 | 4 => HandType::FourOfAKind,
-                    _ => HandType::FullHouse,
+                    1 | 4 => FourOfAKind,
+                    _ => FullHouse,
                 }
             },
             3 => {
                 for v in card_type_groups.values() {
-                    if v.len() == 3 { return HandType::ThreeOfAKind }
-                    if v.len() == 2 { return HandType::TwoPair }
+                    if v.len() == 3 { return ThreeOfAKind }
+                    if v.len() == 2 { return TwoPair }
                 }
                 panic!("impossible state");
             },
-            4 => HandType::OnePair,
-            _ => HandType::HighCard,
+            4 => OnePair,
+            _ => HighCard,
         }
     }
 
-    fn get_hand_type_with_joker_on(&self) -> HandType {
+    fn get_hand_type_with_joker_mode_on(&self) -> HandType {
+        use HandType::*;
+
         let card_type_groups = self.cards.chars().group_by(|i| i.clone());
-        let joker_count = card_type_groups.get(&'J').map_or(0, |vec| vec.len());
-        let non_joker_groups: HashMap<char, Vec<char>> = card_type_groups.into_iter().filter(|i| i.0 != 'J').collect();
+        let joker_count = card_type_groups.get(&JOKER).map_or(0, |vec| vec.len());
+        let non_joker_groups: HashMap<char, Vec<char>> = card_type_groups.into_iter()
+            .filter(|i| i.0 != JOKER).collect();
 
         match joker_count {
             0 => self.get_hand_type_with_joker_mode(false),
             _ => match non_joker_groups.keys().len() {
-                0 | 1 => HandType::FiveOfAKind,
+                0 | 1 => FiveOfAKind,
                 2 => {
                     for v in non_joker_groups.values() {
-                        if v.len() + joker_count == 4 { return HandType::FourOfAKind }
+                        if v.len() + joker_count == 4 { return FourOfAKind }
                     }
-                    HandType::FullHouse
+                    FullHouse
                 },
-                3 => HandType::ThreeOfAKind,
-                _ => HandType::OnePair,
+                3 => ThreeOfAKind,
+                _ => OnePair,
             }
         }
     }
@@ -113,18 +119,19 @@ impl <'a> PartialOrd for Hand<'a> {
 }
 
 impl <'a> Ord for Hand<'a> {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    fn cmp(&self, other: &Self) -> Ordering {
+        use Ordering::*;
         assert!(self.joker_mode == other.joker_mode, "hands must be in same joker mode to be compared");
         match self.get_hand_type().cmp(&other.get_hand_type()) {
-            o @ (Ordering::Greater | Ordering::Less) => o,
-            Ordering::Equal => {
+            o @ (Greater | Less) => o,
+            Equal => {
                 let s = self.cards.chars();
                 let o = other.cards.chars();
                 for (s, o) in s.zip(o) {
                     let cmp = strength(&s, self.joker_mode).cmp(&strength(&o, other.joker_mode));
-                    if cmp != Ordering::Equal { return cmp }
+                    if cmp != Equal { return cmp }
                 }
-                Ordering::Equal
+                Equal
             }
         }
     }
