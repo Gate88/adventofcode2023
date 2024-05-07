@@ -48,11 +48,11 @@ impl<'a> Hand<'a> {
     }
 
     fn get_hand_type(&self) -> HandType {
-        self._get_hand_type(self.joker_mode)
+        self.get_hand_type_with_joker_mode(self.joker_mode)
     }
 
-    fn _get_hand_type(&self, joker_mode: bool) -> HandType {
-        if joker_mode { return self.get_hand_type_joker_mode() }
+    fn get_hand_type_with_joker_mode(&self, joker_mode: bool) -> HandType {
+        if joker_mode { return self.get_hand_type_with_joker_on() }
         
         let card_type_groups = self.cards.chars().group_by(|i| i.clone());
         match card_type_groups.keys().len() {
@@ -75,13 +75,13 @@ impl<'a> Hand<'a> {
         }
     }
 
-    fn get_hand_type_joker_mode(&self) -> HandType {
+    fn get_hand_type_with_joker_on(&self) -> HandType {
         let card_type_groups = self.cards.chars().group_by(|i| i.clone());
         let joker_count = card_type_groups.get(&'J').map_or(0, |vec| vec.len());
         let non_joker_groups: HashMap<char, Vec<char>> = card_type_groups.into_iter().filter(|i| i.0 != 'J').collect();
 
         match joker_count {
-            0 => self._get_hand_type(false),
+            0 => self.get_hand_type_with_joker_mode(false),
             _ => match non_joker_groups.keys().len() {
                 0 | 1 => HandType::FiveOfAKind,
                 2 => {
