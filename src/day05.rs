@@ -223,18 +223,10 @@ pub fn part2() {
     let alm = Almanac::new(DAY05_INPUT);
     let mut category = alm.start_category;
     let mut ranges = alm.start_ranges.clone();
-    print_ranges(&ranges, category);
     while let Some(v) = alm.apply_category_ranges(category, &ranges) {
         ranges = v.0;
         category = v.1;
-        print_ranges(&ranges, category);
     }
     let min = ranges.iter().min_by_key(|r| r.start).unwrap();
     println!("part2: {} = {}", category, min.start);
-}
-
-fn print_ranges(ranges: &Vec<Range>, category: &str) {
-    println!("{category}: ");
-    println!("{:?}", ranges);
-    println!();
 }
