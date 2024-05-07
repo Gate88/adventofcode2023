@@ -83,8 +83,7 @@ impl<'a> Hand<'a> {
         match joker_count {
             0 => self._get_hand_type(false),
             _ => match non_joker_groups.keys().len() {
-                0 => HandType::FiveOfAKind,
-                1 => HandType::FiveOfAKind,
+                0 | 1 => HandType::FiveOfAKind,
                 2 => {
                     for v in non_joker_groups.values() {
                         if v.len() + joker_count == 4 { return HandType::FourOfAKind }
