@@ -118,9 +118,9 @@ impl <'a> PartialOrd for Hand<'a> {
     }
 }
 
-fn card_strength(c: &char, joker_mode: bool) -> u8 {
+fn card_strength(c: &char, joker_mode: bool) -> u32 {
     match c {
-        '2'..='9' => (*c as u8) - ('2' as u8) + 2,
+        '2'..='9' => (*c as u32) - ('2' as u32) + 2,
         'T' => 10,
         'J' => if joker_mode {1} else {11},
         'Q' => 12,
