@@ -1,5 +1,4 @@
 use std::{cmp::Ordering, collections::HashMap};
-use crate::grouper::Grouper;
 
 const _DAY07_SIMPLE_INPUT: &str = include_str!(r"..\input\day07_simple.txt");
 const DAY07_INPUT: &str = include_str!(r"..\input\day07.txt");
@@ -57,19 +56,24 @@ impl<'a> Hand<'a> {
 
         if joker_mode { return self.get_hand_type_with_joker_mode_on() }
         
-        let card_type_groups = self.cards.chars().group_by(|i| i.clone());
-        match card_type_groups.keys().len() {
+        let card_type_groups = self.cards.chars()
+            .fold(HashMap::new(), |mut h, c| {
+                *h.entry(c).or_insert_with(|| 0) += 1;
+                return h
+            });
+
+        match card_type_groups.len() {
             1 => FiveOfAKind,
             2 => {
-                match card_type_groups.values().nth(0).unwrap().len() {
+                match card_type_groups.values().nth(0).unwrap() {
                     1 | 4 => FourOfAKind,
                     _ => FullHouse,
                 }
             },
             3 => {
                 for v in card_type_groups.values() {
-                    if v.len() == 3 { return ThreeOfAKind }
-                    if v.len() == 2 { return TwoPair }
+                    if *v == 3 { return ThreeOfAKind }
+                    if *v == 2 { return TwoPair }
                 }
                 panic!("impossible state");
             },
@@ -81,18 +85,23 @@ impl<'a> Hand<'a> {
     fn get_hand_type_with_joker_mode_on(&self) -> HandType {
         use HandType::*;
 
-        let card_type_groups = self.cards.chars().group_by(|i| i.clone());
-        let joker_count = card_type_groups.get(&JOKER).map_or(0, |vec| vec.len());
-        let non_joker_groups: HashMap<char, Vec<char>> = card_type_groups.into_iter()
+        let card_type_groups = self.cards.chars()
+            .fold(HashMap::new(), |mut h, c| {
+                *h.entry(c).or_insert_with(|| 0) += 1;
+                return h
+            });
+
+        let joker_count = *card_type_groups.get(&JOKER).unwrap_or(&0);
+        let non_joker_groups: HashMap<char, usize> = card_type_groups.into_iter()
             .filter(|i| i.0 != JOKER).collect();
 
         match joker_count {
             0 => self.get_hand_type_with_joker_mode(false),
-            _ => match non_joker_groups.keys().len() {
+            _ => match non_joker_groups.len() {
                 0 | 1 => FiveOfAKind,
                 2 => {
                     for v in non_joker_groups.values() {
-                        if v.len() + joker_count == 4 { return FourOfAKind }
+                        if v + joker_count == 4 { return FourOfAKind }
                     }
                     FullHouse
                 },
