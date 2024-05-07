@@ -45,9 +45,9 @@ impl Hand {
     //Group<card character, card count>
     fn get_card_type_groups(&self) -> HashMap<&char, u32> {
         self.cards.iter()
-            .fold(HashMap::new(), |mut h, c| {
-                *h.entry(c).or_insert_with(|| 0) += 1;
-                return h
+            .fold(HashMap::new(), |mut hashmap, c| {
+                *hashmap.entry(c).or_insert_with(|| 0) += 1;
+                return hashmap
             })
     }
 
