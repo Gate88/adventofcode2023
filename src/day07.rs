@@ -22,18 +22,6 @@ struct Hand<'a> {
     joker_mode: bool,
 }
 
-fn strength(c: &char, joker_mode: bool) -> u8 {
-    match c {
-        '2'..='9' => (*c as u8) - ('2' as u8) + 2,
-        'T' => 10,
-        'J' => if joker_mode {1} else {11},
-        'Q' => 12,
-        'K' => 13,
-        'A' => 14,
-        _ => panic!("unknown card: {c}")
-    }
-}
-
 impl<'a> Hand<'a> {
     fn new(line: &'a str, joker_mode: bool) -> Option<Self> {
         let mut items = line.split(" ");
@@ -56,6 +44,7 @@ impl<'a> Hand<'a> {
 
         if joker_mode { return self.get_hand_type_with_joker_mode_on() }
         
+        //HashMap<card, card_count>
         let card_type_groups = self.cards.chars()
             .fold(HashMap::new(), |mut h, c| {
                 *h.entry(c).or_insert_with(|| 0) += 1;
@@ -65,15 +54,16 @@ impl<'a> Hand<'a> {
         match card_type_groups.len() {
             1 => FiveOfAKind,
             2 => {
+                //number of cards in first group
                 match card_type_groups.values().nth(0).unwrap() {
                     1 | 4 => FourOfAKind,
                     _ => FullHouse,
                 }
             },
             3 => {
-                for v in card_type_groups.values() {
-                    if *v == 3 { return ThreeOfAKind }
-                    if *v == 2 { return TwoPair }
+                for group_card_count in card_type_groups.values() {
+                    if *group_card_count == 3 { return ThreeOfAKind }
+                    if *group_card_count == 2 { return TwoPair }
                 }
                 panic!("impossible state");
             },
@@ -85,6 +75,7 @@ impl<'a> Hand<'a> {
     fn get_hand_type_with_joker_mode_on(&self) -> HandType {
         use HandType::*;
 
+        //HashMap<card, card_count>
         let card_type_groups = self.cards.chars()
             .fold(HashMap::new(), |mut h, c| {
                 *h.entry(c).or_insert_with(|| 0) += 1;
@@ -100,8 +91,8 @@ impl<'a> Hand<'a> {
             _ => match non_joker_groups.len() {
                 0 | 1 => FiveOfAKind,
                 2 => {
-                    for v in non_joker_groups.values() {
-                        if v + joker_count == 4 { return FourOfAKind }
+                    for group_card_count in non_joker_groups.values() {
+                        if group_card_count + joker_count == 4 { return FourOfAKind }
                     }
                     FullHouse
                 },
@@ -127,6 +118,18 @@ impl <'a> PartialOrd for Hand<'a> {
     }
 }
 
+fn card_strength(c: &char, joker_mode: bool) -> u8 {
+    match c {
+        '2'..='9' => (*c as u8) - ('2' as u8) + 2,
+        'T' => 10,
+        'J' => if joker_mode {1} else {11},
+        'Q' => 12,
+        'K' => 13,
+        'A' => 14,
+        _ => panic!("unknown card: {c}")
+    }
+}
+
 impl <'a> Ord for Hand<'a> {
     fn cmp(&self, other: &Self) -> Ordering {
         use Ordering::*;
@@ -137,7 +140,7 @@ impl <'a> Ord for Hand<'a> {
                 let s = self.cards.chars();
                 let o = other.cards.chars();
                 for (s, o) in s.zip(o) {
-                    let cmp = strength(&s, self.joker_mode).cmp(&strength(&o, other.joker_mode));
+                    let cmp = card_strength(&s, self.joker_mode).cmp(&card_strength(&o, other.joker_mode));
                     if cmp != Equal { return cmp }
                 }
                 Equal
@@ -150,20 +153,21 @@ fn get_hands(input: &str, joker_mode: bool) -> Vec<Hand> {
     input.lines().filter_map(|l| Hand::new(l, joker_mode)).collect()
 }
 
-pub fn part1() {
-    let mut hands = get_hands(DAY07_INPUT, false);
+fn calc_winnings(mut hands: Vec<Hand>) -> usize {
     hands.sort_unstable();
-    let p1: usize = hands.iter().enumerate().map(|(i, h)| {
-        h.bid * (i+1)
-    }).sum();
+    hands.iter().enumerate().map(|(i, hand)| {
+        hand.bid * (i+1)
+    }).sum()
+}
+
+pub fn part1() {
+    let hands = get_hands(DAY07_INPUT, false);
+    let p1 = calc_winnings(hands);
     println!("part1: {p1}")
 }
 
 pub fn part2() {
-    let mut hands = get_hands(DAY07_INPUT, true);
-    hands.sort_unstable();
-    let p2: usize = hands.iter().enumerate().map(|(i, h)| {
-        h.bid * (i+1)
-    }).sum();
+    let hands = get_hands(DAY07_INPUT, true);
+    let p2 = calc_winnings(hands);
     println!("part1: {p2}")
 }
