@@ -9,16 +9,14 @@ macro_rules! count_tts {
 }
 
 macro_rules! main_day {
-    ( $run_day:ident, $get_default_day:ident, $($day:ident),* ) => {
+    ( $run_day:ident, $get_default_day:ident, $($day:ident, $day_value:expr),*$(,)* ) => {
         $(
             mod $day;
         )*
 
         fn $run_day(day: usize) -> Option<()>{
-            let mut count = 0usize;
             $(
-                count += 1usize;
-                if day == count {
+                if day == $day_value {
                     use $day::*;
                     println!();
                     part1.time(1);

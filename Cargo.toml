@@ -3,6 +3,10 @@ name = "advent2023"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "proc_macro_lib"
+proc-macro = true
+
 [dependencies]
 regex = "1.10.4"
 lazy_static = "1.4.0"

@@ -1,21 +1,11 @@
+use proc_macro_lib::include_all_day_files;
 use std::{env::args, fmt::Display};
 
 #[macro_use]
-mod day_macros;
+mod macros;
 mod grouper;
 
-main_day!(
-    run_day,
-    get_default_day,
-    day01,
-    day02,
-    day03,
-    day04,
-    day05,
-    day06,
-    day07,
-    day08
-);
+include_all_day_files!();
 
 fn main() {
     let s = args().nth(1).unwrap_or_else(|| get_default_day());
