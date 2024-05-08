@@ -4,6 +4,10 @@ macro_rules! replace_expr {
     };
 }
 
+macro_rules! count_tts {
+    ($($tts:tt)*) => {<[()]>::len(&[$(replace_expr!($tts ())),*])};
+}
+
 macro_rules! main_day {
     ( $run_day:ident, $get_default_day:ident, $($day:ident),* ) => {
         $(
@@ -14,7 +18,7 @@ macro_rules! main_day {
             let mut count = 0usize;
             $(
                 count += 1usize;
-                if count == day {
+                if day == count {
                     use $day::*;
                     println!();
                     part1.time(1);
@@ -29,11 +33,7 @@ macro_rules! main_day {
         }
 
         fn $get_default_day() -> String {
-            let mut count = 0usize;
-            $(
-                count += replace_expr!($day 1usize);
-            )*
-            format!("{count}")
+            format!("{}", count_tts!($($day)*))
         }
     };
 }

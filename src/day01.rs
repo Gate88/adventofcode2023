@@ -2,10 +2,10 @@ use regex::Regex;
 
 const DAY01_INPUT: &str = include_str!(r"..\input\day01.txt");
 
-pub fn part1() -> String {
+pub fn part1() -> i32 {
     let input = DAY01_INPUT;
     let re = Regex::new(r"^[^\d]*(\d).*(\d)[^\d]*$|^[^\d]*(\d)[^\d]*$").unwrap();
-    let p1: i32 = input
+    input
         .lines()
         .map(|line| {
             let captures = re.captures(line).unwrap();
@@ -24,19 +24,17 @@ pub fn part1() -> String {
 
             format!("{a}{b}").parse::<i32>().unwrap()
         })
-        .sum();
-
-    format!("{p1}")
+        .sum()
 }
 
-pub fn part2() -> String {
+pub fn part2() -> i32 {
     let input = DAY01_INPUT;
     let n_strings = r"one|two|three|four|five|six|seven|eight|nine";
     let rev_n_strings = rev(n_strings);
     let reg = Regex::new(&format!("\\d|{n_strings}")).unwrap();
     let reg_rev = Regex::new(&format!("\\d|{rev_n_strings}")).unwrap();
 
-    let p2: i32 = input
+    input
         .lines()
         .map(|line| {
             let first = reg.find(line).unwrap().as_str();
@@ -49,9 +47,7 @@ pub fn part2() -> String {
 
             format!("{first}{last}").parse::<i32>().unwrap()
         })
-        .sum();
-
-    format!("{p2}")
+        .sum()
 }
 
 fn rev(s: &str) -> String {

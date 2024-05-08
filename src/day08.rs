@@ -190,12 +190,12 @@ fn lcm(a: u128, b: u128) -> u128 {
     a * (b / gcd(a, b))
 }
 
-pub fn part1() -> String {
+pub fn part1() -> usize {
     let (graph, directions) = read_input(DAY08_INPUT);
-    format!("{}", calculate_steps(&graph, directions))
+    calculate_steps(&graph, directions)
 }
 
-pub fn part2() -> String {
+pub fn part2() -> u128 {
     let (graph, directions) = read_input(DAY08_INPUT);
-    format!("{}", calculate_ghost_steps(&graph, directions))
+    calculate_ghost_steps(&graph, directions)
 }

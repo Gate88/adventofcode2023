@@ -178,18 +178,16 @@ fn is_gear(c: &char) -> bool {
     *c == '*'
 }
 
-pub fn part1() -> String {
-    let p1: i32 = EngineSchematic::new(DAY03_INPUT)
+pub fn part1() -> i32 {
+    EngineSchematic::new(DAY03_INPUT)
         .get_parts()
         .into_iter()
         .map(|p| p.id)
-        .sum();
-    format!("{p1}")
+        .sum()
 }
 
-pub fn part2() -> String {
+pub fn part2() -> i32 {
     let es = EngineSchematic::new(DAY03_INPUT);
     let parts = es.get_parts();
-    let p2: i32 = es.get_gears(&parts).into_iter().map(|g| g.ratio).sum();
-    format!("{p2}")
+    es.get_gears(&parts).into_iter().map(|g| g.ratio).sum()
 }

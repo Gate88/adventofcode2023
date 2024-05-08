@@ -188,14 +188,14 @@ fn sort_and_calc_winnings(mut hands: Vec<Hand>) -> (usize, Vec<Hand>) {
     )
 }
 
-pub fn part1() -> String {
+pub fn part1() -> usize {
     let hands = get_hands(DAY07_INPUT, false);
     let (p1, _) = sort_and_calc_winnings(hands);
-    format!("{p1}")
+    return p1;
 }
 
-pub fn part2() -> String {
+pub fn part2() -> usize {
     let hands = get_hands(DAY07_INPUT, true);
     let (p2, _) = sort_and_calc_winnings(hands);
-    format!("{p2}")
+    return p2;
 }

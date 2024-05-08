@@ -65,8 +65,8 @@ fn get_games(input: &str) -> Vec<Game> {
         .collect()
 }
 
-pub fn part1() -> String {
-    let p1: i64 = get_games(DAY02_INPUT)
+pub fn part1() -> i64 {
+    get_games(DAY02_INPUT)
         .iter()
         .map(|g| {
             for pick in g.turns.iter().map(|t| &t.picks).flatten() {
@@ -79,12 +79,11 @@ pub fn part1() -> String {
             }
             return g.id;
         })
-        .sum();
-    format!("{p1}")
+        .sum()
 }
 
-pub fn part2() -> String {
-    let p2: i64 = get_games(DAY02_INPUT)
+pub fn part2() -> i64 {
+    get_games(DAY02_INPUT)
         .iter()
         .map(|g| {
             g.turns
@@ -96,7 +95,5 @@ pub fn part2() -> String {
                 .map(|g| g.1.into_iter().map(|p| p.count).max().unwrap())
                 .product::<i64>()
         })
-        .sum();
-
-    format!("{p2}")
+        .sum()
 }
