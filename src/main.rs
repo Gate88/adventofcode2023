@@ -4,6 +4,7 @@ use std::{env::args, fmt::Display};
 #[macro_use]
 mod macros;
 mod grouper;
+mod vec2;
 
 include_all_day_files!("change to pull files");
 
