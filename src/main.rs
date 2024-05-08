@@ -5,7 +5,7 @@ use std::{env::args, fmt::Display};
 mod macros;
 mod grouper;
 
-include_all_day_files!();
+include_all_day_files!("change to pull files");
 
 fn main() {
     let s = args().nth(1).unwrap_or_else(|| get_default_day());
