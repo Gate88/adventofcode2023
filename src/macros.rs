@@ -1,10 +1,10 @@
-macro_rules! replace_expr {
+macro_rules! _replace_expr {
     ($_t:tt $sub:expr) => {
         $sub
     };
 }
 
-macro_rules! count_tts {
+macro_rules! _count_tts {
     ($($tts:tt)*) => {<[()]>::len(&[$(replace_expr!($tts ())),*])};
 }
 
@@ -31,7 +31,10 @@ macro_rules! main_day {
         }
 
         fn $get_default_day() -> String {
-            format!("{}", count_tts!($($day)*))
+            let days = [
+                $($day_value, )*
+            ];
+            format!("{}", days.iter().last().unwrap_or(&0))
         }
     };
 }
