@@ -16,6 +16,7 @@ enum HandType {
     FiveOfAKind = 6,
 }
 
+#[derive(Debug)]
 struct Hand {
     cards: [char; 5],
     bid: usize,
@@ -175,23 +176,26 @@ fn get_hands(input: &str, joker_mode: bool) -> Vec<Hand> {
     input.lines().map(|l| Hand::new(l, joker_mode)).collect()
 }
 
-fn calc_winnings(mut hands: Vec<Hand>) -> usize {
+fn sort_and_calc_winnings(mut hands: Vec<Hand>) -> (usize, Vec<Hand>) {
     hands.sort_unstable();
-    hands
-        .iter()
-        .enumerate()
-        .map(|(i, hand)| hand.bid * (i + 1))
-        .sum()
+    (
+        hands
+            .iter()
+            .enumerate()
+            .map(|(i, hand)| hand.bid * (i + 1))
+            .sum(),
+        hands,
+    )
 }
 
 pub fn part1() {
     let hands = get_hands(DAY07_INPUT, false);
-    let p1 = calc_winnings(hands);
+    let (p1, _) = sort_and_calc_winnings(hands);
     println!("part1: {p1}")
 }
 
 pub fn part2() {
     let hands = get_hands(DAY07_INPUT, true);
-    let p2 = calc_winnings(hands);
+    let (p2, _) = sort_and_calc_winnings(hands);
     println!("part1: {p2}")
 }
