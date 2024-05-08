@@ -164,12 +164,14 @@ impl Ord for Hand {
                 .iter()
                 .zip(other.cards.iter())
                 .find_map(|(self_card, other_card)| {
+                    //If there are unequal strengths, then that's the result
                     Some(
                         card_strength(&self_card, self.joker_mode)
                             .cmp(&card_strength(&other_card, other.joker_mode)),
                     )
                     .filter(|&s| s != Equal)
                 })
+                //If we didn't find unequal strengths, then the whole thing is equal
                 .unwrap_or(Equal),
         }
     }
