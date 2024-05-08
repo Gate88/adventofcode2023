@@ -153,7 +153,7 @@ fn calculate_ghost_steps(graph: &HashMap<&str, Node>, directions: Vec<Direction>
 
     walk_states_done
         .windows(2)
-        .filter_map(|w| TryInto::<&[WalkState; 2]>::try_into(w).ok())
+        .filter_map(|w| TryInto::<&[_; 2]>::try_into(w).ok())
         .fold(0, |total, [a, b]| {
             if total == 0 {
                 lcm(
