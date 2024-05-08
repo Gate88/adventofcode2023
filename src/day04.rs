@@ -53,17 +53,17 @@ impl Card {
     }
 }
 
-pub fn part1() {
+pub fn part1() -> String {
     let p1: i32 = Card::all_cards(INPUT_DAY04)
         .into_iter()
         .map(|c| c.get_points())
         .sum();
-    println!("part1: {p1}")
+    format!("{p1}")
 }
 
-pub fn part2() {
+pub fn part2() -> String {
     let cards = Card::all_cards(INPUT_DAY04);
-    println!("part2: {}", chain_cards(&cards));
+    format!("{}", chain_cards(&cards))
 }
 
 fn chain_cards(cards: &Vec<Card>) -> usize {

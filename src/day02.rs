@@ -65,7 +65,7 @@ fn get_games(input: &str) -> Vec<Game> {
         .collect()
 }
 
-pub fn part1() {
+pub fn part1() -> String {
     let p1: i64 = get_games(DAY02_INPUT)
         .iter()
         .map(|g| {
@@ -80,10 +80,10 @@ pub fn part1() {
             return g.id;
         })
         .sum();
-    println!("part1: {p1}");
+    format!("{p1}")
 }
 
-pub fn part2() {
+pub fn part2() -> String {
     let p2: i64 = get_games(DAY02_INPUT)
         .iter()
         .map(|g| {
@@ -98,5 +98,5 @@ pub fn part2() {
         })
         .sum();
 
-    println!("part2: {p2}");
+    format!("{p2}")
 }

@@ -242,7 +242,7 @@ impl<'a> Almanac<'a> {
 
 const DEBUG: bool = false;
 
-pub fn part1() {
+pub fn part1() -> String {
     let alm = Almanac::new(DAY05_INPUT);
     let p1 = alm
         .start_values
@@ -250,10 +250,10 @@ pub fn part1() {
         .map(|v| alm.convert_all_forwards(*v, alm.start_category))
         .min()
         .unwrap();
-    println!("part1: {} = {}", p1.1, p1.0)
+    format!("{} = {}", p1.1, p1.0)
 }
 
-pub fn part2() {
+pub fn part2() -> String {
     let alm = Almanac::new(DAY05_INPUT);
     let mut category = alm.start_category;
     let mut ranges = alm.start_ranges.clone();
@@ -262,5 +262,5 @@ pub fn part2() {
         category = v.1;
     }
     let min = ranges.iter().min_by_key(|r| r.start).unwrap();
-    println!("part2: {} = {}", category, min.start);
+    format!("{} = {}", category, min.start)
 }

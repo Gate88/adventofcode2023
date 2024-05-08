@@ -2,7 +2,7 @@ use regex::Regex;
 
 const DAY01_INPUT: &str = include_str!(r"..\input\day01.txt");
 
-pub fn part1() {
+pub fn part1() -> String {
     let input = DAY01_INPUT;
     let re = Regex::new(r"^[^\d]*(\d).*(\d)[^\d]*$|^[^\d]*(\d)[^\d]*$").unwrap();
     let p1: i32 = input
@@ -26,10 +26,10 @@ pub fn part1() {
         })
         .sum();
 
-    println!("part1: {p1}");
+    format!("{p1}")
 }
 
-pub fn part2() {
+pub fn part2() -> String {
     let input = DAY01_INPUT;
     let n_strings = r"one|two|three|four|five|six|seven|eight|nine";
     let rev_n_strings = rev(n_strings);
@@ -51,7 +51,7 @@ pub fn part2() {
         })
         .sum();
 
-    print!("part2: {p2}");
+    format!("{p2}")
 }
 
 fn rev(s: &str) -> String {

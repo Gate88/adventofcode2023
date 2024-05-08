@@ -86,13 +86,13 @@ fn get_long_race(input: &str) -> Race {
     Race { time, distance }
 }
 
-pub fn part1() {
+pub fn part1() -> String {
     let races = get_races(DAY06_INPUT);
     let p1: usize = races.iter().map(|r| r.ways_to_win()).product();
-    println!("{}", p1);
+    format!("{}", p1)
 }
 
-pub fn part2() {
+pub fn part2() -> String {
     let race = get_long_race(DAY06_INPUT);
-    println!("{}", race.ways_to_win());
+    format!("{}", race.ways_to_win())
 }
