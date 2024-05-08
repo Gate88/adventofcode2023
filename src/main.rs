@@ -20,7 +20,7 @@ fn main() {
         "5" => main_d05(),
         "6" => main_d06(),
         "7" => main_d07(),
-        _ => panic!("not a valid day")
+        _ => panic!("not a valid day"),
     };
 }
 
@@ -51,7 +51,8 @@ fn main_d03() {
 
 fn main_d02() {
     day02::part1();
-    day02::part2();}
+    day02::part2();
+}
 
 fn main_d01() {
     day01::part1();

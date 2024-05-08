@@ -1,6 +1,6 @@
-use std::collections::{BTreeMap, HashMap};
 use lazy_static::lazy_static;
 use regex::Regex;
+use std::collections::{BTreeMap, HashMap};
 
 const _DAY05_SIMPLE_INPUT: &str = include_str!(r"..\input\day05_simple.txt");
 const DAY05_INPUT: &str = include_str!(r"..\input\day05.txt");
@@ -19,9 +19,7 @@ struct Range {
 
 impl Range {
     fn new(start: usize, len: usize) -> Self {
-        Range {
-            start, len
-        }
+        Range { start, len }
     }
 
     fn end(&self) -> usize {
@@ -48,36 +46,43 @@ impl Entry {
     }
 
     //returns the converted ranges, and then the leftover range
-    fn get_ranges(&self, range: &Range) -> (Option<Vec<Range>>,Option<Range>) {
-        if self.source.in_range(range.start) && self.source.in_range(range.end()-1) {
-            return (Some(vec![Range {
-                start: self.apply_range(range.start),
-                len: range.len
-            }]), None)
+    fn get_ranges(&self, range: &Range) -> (Option<Vec<Range>>, Option<Range>) {
+        if self.source.in_range(range.start) && self.source.in_range(range.end() - 1) {
+            return (
+                Some(vec![Range {
+                    start: self.apply_range(range.start),
+                    len: range.len,
+                }]),
+                None,
+            );
         } else if self.source.in_range(range.start) {
             let new_len = self.source.end() - range.start;
-            return (Some(vec![
-                Range {
+            return (
+                Some(vec![Range {
                     start: self.apply_range(range.start),
-                    len: new_len,  
-                }
-            ]), Some(Range {
-                start: range.start + new_len,
-                len: range.len - new_len,
-            }))
-        } else if self.source.in_range(range.end()-1) {
-            return (Some(vec![Range {
-                start: range.start,
-                len: self.source.end() - range.start,
-            }, Range {
-                start: self.apply_range(self.source.start),
-                len: self.source.len,
-            }
-            ]), None)
+                    len: new_len,
+                }]),
+                Some(Range {
+                    start: range.start + new_len,
+                    len: range.len - new_len,
+                }),
+            );
+        } else if self.source.in_range(range.end() - 1) {
+            return (
+                Some(vec![
+                    Range {
+                        start: range.start,
+                        len: self.source.end() - range.start,
+                    },
+                    Range {
+                        start: self.apply_range(self.source.start),
+                        len: self.source.len,
+                    },
+                ]),
+                None,
+            );
         } else {
-            return (Some(vec![
-                range.clone()
-            ]), None)
+            return (Some(vec![range.clone()]), None);
         }
     }
 }
@@ -102,8 +107,17 @@ impl<'a> Almanac<'a> {
 
         let mut sections = SECTION_RE.split(input);
         let seed_section = sections.next().unwrap();
-        let start_values: Vec<usize> = NUM_RE.find_iter(seed_section).map(|s| s.as_str().parse::<usize>().unwrap()).collect();
-        let start_ranges: Vec<Range> = start_values.chunks_exact(2).map(|c| Range { start: c[0], len: c[1]}).collect();
+        let start_values: Vec<usize> = NUM_RE
+            .find_iter(seed_section)
+            .map(|s| s.as_str().parse::<usize>().unwrap())
+            .collect();
+        let start_ranges: Vec<Range> = start_values
+            .chunks_exact(2)
+            .map(|c| Range {
+                start: c[0],
+                len: c[1],
+            })
+            .collect();
 
         for section in sections {
             let captures = NAME_RE.captures(section).unwrap();
@@ -115,10 +129,13 @@ impl<'a> Almanac<'a> {
                 let destination: usize = entry_match.get(1).unwrap().as_str().parse().unwrap();
                 let source: usize = entry_match.get(2).unwrap().as_str().parse().unwrap();
                 let range_length: usize = entry_match.get(3).unwrap().as_str().parse().unwrap();
-                entry_list.insert(source, Entry {
-                    destination: Range::new(destination, range_length),
-                    source: Range ::new(source, range_length)
-                });
+                entry_list.insert(
+                    source,
+                    Entry {
+                        destination: Range::new(destination, range_length),
+                        source: Range::new(source, range_length),
+                    },
+                );
             }
             lookup.insert(source_name, entry_list.into_iter().map(|i| i.1).collect());
         }
@@ -132,8 +149,14 @@ impl<'a> Almanac<'a> {
         }
     }
 
-    fn apply_category_ranges(&self, category: &str, ranges: &Vec<Range>) -> Option<(Vec<Range>, &str)> {
-        let Some(destination_name) = self.get_next_category(category) else { return None };
+    fn apply_category_ranges(
+        &self,
+        category: &str,
+        ranges: &Vec<Range>,
+    ) -> Option<(Vec<Range>, &str)> {
+        let Some(destination_name) = self.get_next_category(category) else {
+            return None;
+        };
         let mut out = Vec::new();
 
         for range in ranges {
@@ -168,7 +191,7 @@ impl<'a> Almanac<'a> {
                 } else {
                     break;
                 }
-            }    
+            }
         }
 
         out
@@ -179,7 +202,9 @@ impl<'a> Almanac<'a> {
     }
 
     fn convert_forwards(&self, value: usize, category: &str) -> Option<(usize, &str)> {
-        let Some(destination_name) = self.get_next_category(category) else { return None };
+        let Some(destination_name) = self.get_next_category(category) else {
+            return None;
+        };
         let entry_list = self.lookup.get(category).unwrap();
 
         let i = entry_list.partition_point(|e| value >= e.source.end());
@@ -191,31 +216,40 @@ impl<'a> Almanac<'a> {
     }
 
     fn convert_all_forwards(&'a self, value: usize, category: &'a str) -> (usize, &'a str) {
-        return self.convert_all(value, category, &Self::convert_forwards)
+        return self.convert_all(value, category, &Self::convert_forwards);
     }
 
-    fn convert_all<F>(&'a self, value: usize, category: &'a str,f: F) -> (usize, &'a str)
-    where F: Fn(&'a Self, usize, &str) -> Option<(usize, &'a str)>
+    fn convert_all<F>(&'a self, value: usize, category: &'a str, f: F) -> (usize, &'a str)
+    where
+        F: Fn(&'a Self, usize, &str) -> Option<(usize, &'a str)>,
     {
         let mut out = (value, category);
-        if DEBUG { println!("{}: {}", out.1, out.0)}
+        if DEBUG {
+            println!("{}: {}", out.1, out.0)
+        }
         while let Some(next) = f(self, out.0, out.1) {
             out = next;
-            if DEBUG { println!("{}: {}", out.1, out.0)}
+            if DEBUG {
+                println!("{}: {}", out.1, out.0)
+            }
         }
-        if DEBUG { println!() }
-        return out
+        if DEBUG {
+            println!()
+        }
+        return out;
     }
-
 }
 
 const DEBUG: bool = false;
 
 pub fn part1() {
     let alm = Almanac::new(DAY05_INPUT);
-    let p1 = alm.start_values.iter().map(|v| {
-        alm.convert_all_forwards(*v, alm.start_category)
-    }).min().unwrap();
+    let p1 = alm
+        .start_values
+        .iter()
+        .map(|v| alm.convert_all_forwards(*v, alm.start_category))
+        .min()
+        .unwrap();
     println!("part1: {} = {}", p1.1, p1.0)
 }
 

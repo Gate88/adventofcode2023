@@ -10,16 +10,20 @@ struct Race {
 impl Race {
     fn shortest_hold_time(&self) -> usize {
         for hold in 1..self.time {
-            if (self.time - hold) * hold > self.distance { return hold }
+            if (self.time - hold) * hold > self.distance {
+                return hold;
+            }
         }
-        return self.time
+        return self.time;
     }
 
     fn longest_hold_time(&self) -> usize {
         for hold in (1..self.time).rev() {
-            if (self.time - hold) * hold > self.distance { return hold }
+            if (self.time - hold) * hold > self.distance {
+                return hold;
+            }
         }
-        return self.time
+        return self.time;
     }
 
     fn ways_to_win(&self) -> usize {
@@ -28,37 +32,63 @@ impl Race {
 }
 
 fn get_races(input: &str) -> Vec<Race> {
-    let times = input.lines().nth(0).unwrap()
-        .split(":").nth(1).unwrap()
-        .split(" ").filter_map(|s| s.parse::<usize>().ok());
-    let distances = input.lines().nth(1).unwrap()
-        .split(":").nth(1).unwrap()
-        .split(" ").filter_map(|s| s.parse::<usize>().ok());
+    let times = input
+        .lines()
+        .nth(0)
+        .unwrap()
+        .split(":")
+        .nth(1)
+        .unwrap()
+        .split(" ")
+        .filter_map(|s| s.parse::<usize>().ok());
+    let distances = input
+        .lines()
+        .nth(1)
+        .unwrap()
+        .split(":")
+        .nth(1)
+        .unwrap()
+        .split(" ")
+        .filter_map(|s| s.parse::<usize>().ok());
 
-    times.zip(distances).map(|i| Race {
-        time: i.0,
-        distance: i.1
-    }).collect()
+    times
+        .zip(distances)
+        .map(|i| Race {
+            time: i.0,
+            distance: i.1,
+        })
+        .collect()
 }
 
 fn get_long_race(input: &str) -> Race {
-    let time = input.lines().nth(0).unwrap()
-        .split(":").nth(1).unwrap()
-        .replace(" ", "").parse::<usize>().unwrap();
+    let time = input
+        .lines()
+        .nth(0)
+        .unwrap()
+        .split(":")
+        .nth(1)
+        .unwrap()
+        .replace(" ", "")
+        .parse::<usize>()
+        .unwrap();
 
-    let distance = input.lines().nth(1).unwrap()
-        .split(":").nth(1).unwrap()
-        .replace(" ", "").parse::<usize>().unwrap();
+    let distance = input
+        .lines()
+        .nth(1)
+        .unwrap()
+        .split(":")
+        .nth(1)
+        .unwrap()
+        .replace(" ", "")
+        .parse::<usize>()
+        .unwrap();
 
-    Race {
-        time,
-        distance
-    }
+    Race { time, distance }
 }
 
 pub fn part1() {
     let races = get_races(DAY06_INPUT);
-    let p1: usize = races.iter().map(|r| { r.ways_to_win() }).product();
+    let p1: usize = races.iter().map(|r| r.ways_to_win()).product();
     println!("{}", p1);
 }
 

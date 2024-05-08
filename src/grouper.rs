@@ -1,4 +1,4 @@
-use std::{hash::Hash, collections::HashMap};
+use std::{collections::HashMap, hash::Hash};
 
 pub trait Grouper: IntoIterator {
     fn group_by<K, V, F>(self, mut f: F) -> HashMap<K, Vec<V>>
@@ -16,7 +16,7 @@ pub trait Grouper: IntoIterator {
                 result.get_mut(&key).unwrap().push(item)
             }
         }
-    
+
         result
     }
 }
