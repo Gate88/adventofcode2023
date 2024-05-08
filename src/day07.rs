@@ -69,25 +69,22 @@ impl Hand {
         let card_type_groups = self.get_card_type_groups();
         match card_type_groups.len() {
             1 => FiveOfAKind,
-            2 => {
-                if let Some(1 | 4) = card_type_groups.values().next() {
-                    FourOfAKind
-                } else {
-                    FullHouse
-                }
-            }
-            3 => {
-                if *card_type_groups
-                    .values()
-                    .find(|&&n| n == 3 || n == 2)
-                    .unwrap()
-                    == 3
-                {
-                    ThreeOfAKind
-                } else {
-                    TwoPair
-                }
-            }
+            2 => card_type_groups
+                .values()
+                .next()
+                .map(|count| match count {
+                    1 | 4 => FourOfAKind,
+                    _ => FullHouse,
+                })
+                .unwrap(),
+            3 => card_type_groups
+                .values()
+                .find_map(|&count| match count {
+                    3 => Some(ThreeOfAKind),
+                    2 => Some(TwoPair),
+                    _ => None,
+                })
+                .unwrap(),
             4 => OnePair,
             _ => HighCard,
         }
@@ -101,20 +98,17 @@ impl Hand {
         let joker_count = *card_type_groups.get(&JOKER).unwrap_or(&0);
         let non_joker_groups: HashMap<&char, u32> = card_type_groups
             .into_iter()
-            .filter(|(&c, _)| c != JOKER)
+            .filter(|(&card, _)| card != JOKER)
             .collect();
 
         match joker_count {
             0 => self.get_hand_type_with_joker_mode(false),
             _ => match non_joker_groups.len() {
                 0 | 1 => FiveOfAKind,
-                2 => {
-                    if non_joker_groups.values().any(|n| n + joker_count == 4) {
-                        FourOfAKind
-                    } else {
-                        FullHouse
-                    }
-                }
+                2 => non_joker_groups
+                    .values()
+                    .find_map(|count| (count + joker_count == 4).then_some(FourOfAKind))
+                    .unwrap_or(FullHouse),
                 3 => ThreeOfAKind,
                 _ => OnePair,
             },
