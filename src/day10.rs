@@ -187,37 +187,42 @@ fn flood_fill(pipemap: &PipeMap, visited: &Visited) -> HashSet<Vec2> {
         for dir in Vec2::ALL_CARDINAL {
             let next = current + *dir;
 
-            if !is_in_map(&next, &map_size) || flooded.contains(&next) {
+            if !is_in_map(&next, &map_size)
+                || flooded.contains(&next)
+                || blocked_by_pipes(dir, current, pipemap, visited)
+            {
                 continue;
             }
 
-            let cannot_move =
-                match *dir {
-                    //up and left+right
-                    Vec2::NORTH => get_pipes_if_visited(&(current + *dir), pipemap, visited)
-                        .contains(&Vec2::WEST),
-                    //same and left+right
-                    Vec2::SOUTH => {
-                        get_pipes_if_visited(&(current), pipemap, visited).contains(&Vec2::WEST)
-                    }
-                    //left and up + down
-                    Vec2::WEST => get_pipes_if_visited(&(current + *dir), pipemap, visited)
-                        .contains(&Vec2::NORTH),
-                    //same and up + down
-                    Vec2::EAST => {
-                        get_pipes_if_visited(&(current), pipemap, visited).contains(&Vec2::NORTH)
-                    }
-                    _ => panic!(),
-                };
-            if cannot_move {
-                continue;
-            }
             flooded.insert(next);
             queue.push_back(next);
         }
     }
 
     return flooded;
+}
+
+fn blocked_by_pipes(
+    dir: &Vec2,
+    current: Vec2,
+    pipemap: &PipeMap,
+    visited: &HashMap<Vec2, i32>,
+) -> bool {
+    match *dir {
+        //up and left+right
+        Vec2::NORTH => {
+            get_pipes_if_visited(&(current + *dir), pipemap, visited).contains(&Vec2::WEST)
+        }
+        //same and left+right
+        Vec2::SOUTH => get_pipes_if_visited(&(current), pipemap, visited).contains(&Vec2::WEST),
+        //left and up + down
+        Vec2::WEST => {
+            get_pipes_if_visited(&(current + *dir), pipemap, visited).contains(&Vec2::NORTH)
+        }
+        //same and up + down
+        Vec2::EAST => get_pipes_if_visited(&(current), pipemap, visited).contains(&Vec2::NORTH),
+        _ => panic!(),
+    }
 }
 
 fn get_pipes_if_visited(pos: &Vec2, pipemap: &PipeMap, visited: &Visited) -> HashSet<Vec2> {
