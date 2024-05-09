@@ -1,22 +1,11 @@
-const _DAY10_SIMPLE_INPUT: &str = include_str!(r"..\input\day10_simple.txt");
-const DAY10_INPUT: &str = include_str!(r"..\input\day10.txt");
+const _DAY10_SIMPLE_INPUT: &str = include_str!(r"..\..\input\day10_simple.txt");
+const DAY10_INPUT: &str = include_str!(r"..\..\input\day10.txt");
+
+mod pipes;
 
 mod pipemap {
-    use std::collections::HashSet;
-
-    use crate::vec2::Vec2;
-    use bitflags::bitflags;
-    bitflags! {
-        #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-        pub struct Pipes: u32 {
-            const NORTH = 0x01;
-            const SOUTH = 0x02;
-            const EAST = 0x04;
-            const WEST = 0x08;
-            const START = 0x10;
-        }
-    }
-
+    use super::pipes::Pipes;
+    use crate::helper::vec2::Vec2;
     #[derive(Debug)]
     pub struct PipeMap {
         map: Vec<Pipes>,
@@ -61,7 +50,7 @@ mod pipemap {
             return result;
         }
 
-        pub fn get_direction_of_connected_pipes(&self, point: Vec2) -> HashSet<Vec2> {
+        pub fn get_pipes(&self, point: Vec2) -> Pipes {
             self.get_with_index(self.to_index(point))
         }
 
@@ -69,15 +58,15 @@ mod pipemap {
             return Vec2::new(self.width, self.height);
         }
 
-        fn get_directions_for_start(&self, point: Vec2) -> HashSet<Vec2> {
+        fn get_pipes_for_start(&self, point: Vec2) -> Pipes {
             Vec2::ALL_CARDINAL
                 .iter()
                 .filter_map(|&d| {
-                    self.get_direction_of_connected_pipes(point + d)
-                        .contains(&d.invert())
-                        .then_some(d)
+                    self.get_pipes(point + d)
+                        .contains(d.invert().as_pipe())
+                        .then_some(d.as_pipe())
                 })
-                .collect()
+                .fold(Pipes::empty(), |out, p| out | p)
         }
 
         pub fn find_start(&self) -> Vec2 {
@@ -91,30 +80,17 @@ mod pipemap {
             )
         }
 
-        pub fn get_with_index(&self, index: i32) -> HashSet<Vec2> {
+        pub fn get_with_index(&self, index: i32) -> Pipes {
             if index < 0 || index >= self.map.len().try_into().unwrap() {
-                HashSet::<_>::new()
+                Pipes::empty()
             } else {
                 let out = *self.map.get::<usize>(index.try_into().unwrap()).unwrap();
                 if out.contains(Pipes::START) {
-                    self.get_directions_for_start(self.from_index(index))
+                    self.get_pipes_for_start(self.from_index(index))
                 } else {
-                    Self::pipes_to_dir(out)
+                    out
                 }
             }
-        }
-
-        fn pipes_to_dir(pipes: Pipes) -> HashSet<Vec2> {
-            pipes
-                .into_iter()
-                .map(|p| match p {
-                    Pipes::NORTH => Vec2::NORTH,
-                    Pipes::SOUTH => Vec2::SOUTH,
-                    Pipes::EAST => Vec2::EAST,
-                    Pipes::WEST => Vec2::WEST,
-                    _ => panic!("failed to convert"),
-                })
-                .collect()
         }
 
         fn to_index(&self, point: Vec2) -> i32 {
@@ -134,8 +110,9 @@ mod pipemap {
     }
 }
 
-use crate::vec2::Vec2;
+use crate::helper::vec2::Vec2;
 use pipemap::*;
+use pipes::Pipes;
 use std::collections::{HashMap, HashSet, VecDeque};
 
 type Visited = HashMap<Vec2, i32>;
@@ -153,7 +130,7 @@ fn visit_loop(pipemap: &PipeMap, start: Vec2) -> (Visited, Vec2) {
         let depth = *visited
             .get(&current)
             .expect("must already be visited to be in queue");
-        for adj in pipemap.get_direction_of_connected_pipes(current) {
+        for adj in pipemap.get_pipes(current) {
             let next = adj + current;
             if !visited.contains_key(&next) {
                 visited.insert(next, depth + 1);
@@ -172,7 +149,8 @@ pub fn part1() -> i32 {
     *visited.get(&last).unwrap()
 }
 
-//assume we're at top left corner of square, need to test two pipes to see if we can move between them
+//assume we're at top left corner of square e.g. we travel on the grids lines rather than in the grid squares
+//so we can "squeeze" through pipes
 fn flood_fill(pipemap: &PipeMap, visited: &Visited) -> HashSet<Vec2> {
     let start = Vec2::new(0, 0);
     let mut flooded = HashSet::new();
@@ -209,26 +187,22 @@ fn blocked_by_pipes(
     visited: &HashMap<Vec2, i32>,
 ) -> bool {
     match *dir {
-        //up and left+right
         Vec2::NORTH => {
-            get_pipes_if_visited(&(current + *dir), pipemap, visited).contains(&Vec2::WEST)
+            get_pipes_if_visited(&(current + *dir), pipemap, visited).contains(Pipes::WEST)
         }
-        //same and left+right
-        Vec2::SOUTH => get_pipes_if_visited(&(current), pipemap, visited).contains(&Vec2::WEST),
-        //left and up + down
+        Vec2::SOUTH => get_pipes_if_visited(&(current), pipemap, visited).contains(Pipes::WEST),
         Vec2::WEST => {
-            get_pipes_if_visited(&(current + *dir), pipemap, visited).contains(&Vec2::NORTH)
+            get_pipes_if_visited(&(current + *dir), pipemap, visited).contains(Pipes::NORTH)
         }
-        //same and up + down
-        Vec2::EAST => get_pipes_if_visited(&(current), pipemap, visited).contains(&Vec2::NORTH),
+        Vec2::EAST => get_pipes_if_visited(&(current), pipemap, visited).contains(Pipes::NORTH),
         _ => panic!(),
     }
 }
 
-fn get_pipes_if_visited(pos: &Vec2, pipemap: &PipeMap, visited: &Visited) -> HashSet<Vec2> {
+fn get_pipes_if_visited(pos: &Vec2, pipemap: &PipeMap, visited: &Visited) -> Pipes {
     match visited.contains_key(pos) {
-        true => pipemap.get_direction_of_connected_pipes(*pos),
-        false => HashSet::new(),
+        true => pipemap.get_pipes(*pos),
+        false => Pipes::empty(),
     }
 }
 

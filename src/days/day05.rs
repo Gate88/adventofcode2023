@@ -2,8 +2,8 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::{BTreeMap, HashMap};
 
-const _DAY05_SIMPLE_INPUT: &str = include_str!(r"..\input\day05_simple.txt");
-const DAY05_INPUT: &str = include_str!(r"..\input\day05.txt");
+const _DAY05_SIMPLE_INPUT: &str = include_str!(r"..\..\input\day05_simple.txt");
+const DAY05_INPUT: &str = include_str!(r"..\..\input\day05.txt");
 
 lazy_static! {
     static ref SECTION_RE: Regex = Regex::new(r"(\r\n){2}|\r{2}|\n{2}").unwrap();

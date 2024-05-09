@@ -3,7 +3,7 @@ use std::collections::HashSet;
 
 use regex::Regex;
 
-const INPUT_DAY04: &str = include_str!(r"..\input\day04.txt");
+const INPUT_DAY04: &str = include_str!(r"..\..\input\day04.txt");
 
 lazy_static! {
     static ref CARD_RE: Regex =

@@ -1,5 +1,5 @@
-const _DAY06_SIMPLE_INPUT: &str = include_str!(r"..\input\day06_simple.txt");
-const DAY06_INPUT: &str = include_str!(r"..\input\day06.txt");
+const _DAY06_SIMPLE_INPUT: &str = include_str!(r"..\..\input\day06_simple.txt");
+const DAY06_INPUT: &str = include_str!(r"..\..\input\day06.txt");
 
 #[derive(Debug)]
 struct Race {

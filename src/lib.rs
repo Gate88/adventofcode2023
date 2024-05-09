@@ -4,7 +4,7 @@ use std::fs;
 
 #[proc_macro]
 pub fn include_all_day_files(_item: TokenStream) -> TokenStream {
-    let paths = fs::read_dir(format!(r"{}\src\", env!("CARGO_MANIFEST_DIR"))).unwrap();
+    let paths = fs::read_dir(format!(r"{}\src\days\", env!("CARGO_MANIFEST_DIR"))).unwrap();
     let mut sorted = paths
         .filter_map(|p| {
             let file_name = p.unwrap().file_name().to_str().unwrap().to_owned();

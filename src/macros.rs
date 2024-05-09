@@ -14,7 +14,7 @@ macro_rules! main_day {
             mod $day;
         )*
 
-        fn $run_day(day: usize) -> Option<()>{
+        pub fn $run_day(day: usize) -> Option<()>{
             $(
                 if day == $day_value {
                     use $day::*;
@@ -30,7 +30,7 @@ macro_rules! main_day {
             return None
         }
 
-        fn $get_default_day() -> String {
+        pub fn $get_default_day() -> String {
             let days = [
                 $($day_value, )*
             ];

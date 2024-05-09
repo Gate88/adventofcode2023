@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-const _DAY08_SIMPLE_INPUT: &str = include_str!(r"..\input\day08_simple.txt");
-const DAY08_INPUT: &str = include_str!(r"..\input\day08.txt");
+const _DAY08_SIMPLE_INPUT: &str = include_str!(r"..\..\input\day08_simple.txt");
+const DAY08_INPUT: &str = include_str!(r"..\..\input\day08.txt");
 
 #[derive(Debug)]
 enum Direction {
