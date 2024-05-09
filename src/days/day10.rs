@@ -1,5 +1,5 @@
-const _DAY10_SIMPLE_INPUT: &str = include_str!(r"..\..\input\day10_simple.txt");
-const DAY10_INPUT: &str = include_str!(r"..\..\input\day10.txt");
+const _DAY10_SIMPLE_INPUT: &str = include_str!(r"input\day10_simple.txt");
+const DAY10_INPUT: &str = include_str!(r"input\day10.txt");
 
 mod pipes;
 

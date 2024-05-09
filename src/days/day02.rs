@@ -2,7 +2,7 @@ use crate::helper::grouper::Grouper;
 use regex::Regex;
 use std::hash::Hash;
 
-const DAY02_INPUT: &str = include_str!(r"..\..\input\day02.txt");
+const DAY02_INPUT: &str = include_str!(r"input\day02.txt");
 
 #[derive(PartialEq, Eq, Hash)]
 enum Color {

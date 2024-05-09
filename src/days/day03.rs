@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-const DAY03_INPUT: &str = include_str!(r"..\..\input\day03.txt");
+const DAY03_INPUT: &str = include_str!(r"input\day03.txt");
 
 struct EngineSchematic {
     data: Vec<char>,

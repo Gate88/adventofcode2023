@@ -1,7 +1,7 @@
 use std::{cmp::Ordering, collections::HashMap};
 
-const _DAY07_SIMPLE_INPUT: &str = include_str!(r"..\..\input\day07_simple.txt");
-const DAY07_INPUT: &str = include_str!(r"..\..\input\day07.txt");
+const _DAY07_SIMPLE_INPUT: &str = include_str!(r"input\day07_simple.txt");
+const DAY07_INPUT: &str = include_str!(r"input\day07.txt");
 
 const JOKER: char = 'J';
 

@@ -1,7 +1,7 @@
 use std::ops::{Add, Sub};
 
-const _DAY09_SIMPLE_INPUT: &str = include_str!(r"..\..\input\day09_simple.txt");
-const DAY09_INPUT: &str = include_str!(r"..\..\input\day09.txt");
+const _DAY09_SIMPLE_INPUT: &str = include_str!(r"input\day09_simple.txt");
+const DAY09_INPUT: &str = include_str!(r"input\day09.txt");
 
 mod history {
     use std::marker::PhantomData;
