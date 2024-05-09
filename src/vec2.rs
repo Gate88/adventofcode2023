@@ -6,20 +6,22 @@ pub struct Vec2 {
     pub y: i32,
 }
 
-pub const NORTH: Vec2 = Vec2 { x: 0, y: -1 };
-pub const SOUTH: Vec2 = Vec2 { x: 0, y: 1 };
-pub const EAST: Vec2 = Vec2 { x: 1, y: 0 };
-pub const WEST: Vec2 = Vec2 { x: -1, y: 0 };
-
-pub const ALL_CARDINAL: &[Vec2] = &[NORTH, SOUTH, EAST, WEST];
-
 impl Vec2 {
+    pub fn new(x: i32, y: i32) -> Vec2 {
+        Vec2 { x, y }
+    }
     pub fn invert(&self) -> Vec2 {
         Vec2 {
             x: -self.x,
             y: -self.y,
         }
     }
+
+    pub const NORTH: Vec2 = Vec2 { x: 0, y: -1 };
+    pub const SOUTH: Vec2 = Vec2 { x: 0, y: 1 };
+    pub const EAST: Vec2 = Vec2 { x: 1, y: 0 };
+    pub const WEST: Vec2 = Vec2 { x: -1, y: 0 };
+    pub const ALL_CARDINAL: &'static [Vec2] = &[Vec2::NORTH, Vec2::SOUTH, Vec2::EAST, Vec2::WEST];
 }
 
 impl Add for Vec2 {
