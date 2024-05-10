@@ -1,11 +1,12 @@
 const _DAY10_SIMPLE_INPUT: &str = include_str!(r"input\day10_simple.txt");
 const DAY10_INPUT: &str = include_str!(r"input\day10.txt");
 
+type Vec2 = crate::helper::vec2::Vec2<i32>;
 mod pipes;
-
 mod pipemap {
     use super::pipes::Pipes;
-    use crate::helper::vec2::Vec2;
+    type Vec2 = crate::helper::vec2::Vec2<i32>;
+
     #[derive(Debug)]
     pub struct PipeMap {
         map: Vec<Pipes>,
@@ -110,7 +111,6 @@ mod pipemap {
     }
 }
 
-use crate::helper::vec2::Vec2;
 use pipemap::*;
 use pipes::Pipes;
 use std::collections::{HashMap, HashSet, VecDeque};

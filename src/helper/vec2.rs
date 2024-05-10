@@ -1,31 +1,48 @@
-use std::ops::{Add, AddAssign, Sub};
+use std::ops::{Add, AddAssign, Mul, Neg, Sub};
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Vec2 {
-    pub x: i32,
-    pub y: i32,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Vec2<T> {
+    pub x: T,
+    pub y: T,
 }
 
-impl Vec2 {
-    pub fn new(x: i32, y: i32) -> Vec2 {
+impl<T> Vec2<T>
+where
+    T: Neg<Output = T> + Copy,
+{
+    pub fn new(x: T, y: T) -> Self {
         Vec2 { x, y }
     }
-    pub fn invert(&self) -> Vec2 {
+    pub fn invert(&self) -> Self {
         Vec2 {
             x: -self.x,
             y: -self.y,
         }
     }
-
-    pub const NORTH: Vec2 = Vec2 { x: 0, y: -1 };
-    pub const SOUTH: Vec2 = Vec2 { x: 0, y: 1 };
-    pub const EAST: Vec2 = Vec2 { x: 1, y: 0 };
-    pub const WEST: Vec2 = Vec2 { x: -1, y: 0 };
-    pub const ALL_CARDINAL: &'static [Vec2] = &[Vec2::NORTH, Vec2::SOUTH, Vec2::EAST, Vec2::WEST];
 }
 
-impl Add for Vec2 {
-    type Output = Vec2;
+impl Vec2<i32> {
+    pub const NORTH: Self = Vec2 { x: 0, y: -1 };
+    pub const SOUTH: Self = Vec2 { x: 0, y: 1 };
+    pub const EAST: Self = Vec2 { x: 1, y: 0 };
+    pub const WEST: Self = Vec2 { x: -1, y: 0 };
+    pub const ALL_CARDINAL: &'static [Self] = &[Self::NORTH, Self::SOUTH, Self::EAST, Self::WEST];
+}
+
+#[allow(dead_code)]
+impl Vec2<i64> {
+    pub const NORTH: Self = Vec2 { x: 0, y: -1 };
+    pub const SOUTH: Self = Vec2 { x: 0, y: 1 };
+    pub const EAST: Self = Vec2 { x: 1, y: 0 };
+    pub const WEST: Self = Vec2 { x: -1, y: 0 };
+    pub const ALL_CARDINAL: &'static [Self] = &[Self::NORTH, Self::SOUTH, Self::EAST, Self::WEST];
+}
+
+impl<T> Add for Vec2<T>
+where
+    T: Add<Output = T>,
+{
+    type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
         Self {
@@ -35,15 +52,35 @@ impl Add for Vec2 {
     }
 }
 
-impl AddAssign for Vec2 {
+impl<T> Mul<T> for Vec2<T>
+where
+    T: Mul<Output = T> + Copy,
+{
+    type Output = Self;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Self {
+            x: self.x * rhs,
+            y: self.y * rhs,
+        }
+    }
+}
+
+impl<T> AddAssign for Vec2<T>
+where
+    T: AddAssign,
+{
     fn add_assign(&mut self, rhs: Self) {
         self.x += rhs.x;
         self.y += rhs.y;
     }
 }
 
-impl Sub for Vec2 {
-    type Output = Vec2;
+impl<T> Sub for Vec2<T>
+where
+    T: Sub<Output = T>,
+{
+    type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
         Self {

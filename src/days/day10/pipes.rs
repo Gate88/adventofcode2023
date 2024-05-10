@@ -13,29 +13,29 @@ bitflags! {
     }
 }
 
-impl Vec2 {
+impl Vec2<i32> {
     pub fn as_pipe(&self) -> Pipes {
         match *self {
-            Vec2::NORTH => Pipes::NORTH,
-            Vec2::SOUTH => Pipes::SOUTH,
-            Vec2::EAST => Pipes::EAST,
-            Vec2::WEST => Pipes::WEST,
+            Self::NORTH => Pipes::NORTH,
+            Self::SOUTH => Pipes::SOUTH,
+            Self::EAST => Pipes::EAST,
+            Self::WEST => Pipes::WEST,
             _ => panic!(),
         }
     }
 }
 
-impl Add<Pipes> for Vec2 {
-    type Output = Vec2;
+impl Add<Pipes> for Vec2<i32> {
+    type Output = Self;
 
     fn add(self, rhs: Pipes) -> Self::Output {
         let mut out = self;
         for pipe in rhs.iter() {
             match pipe {
-                Pipes::NORTH => out += Vec2::NORTH,
-                Pipes::SOUTH => out += Vec2::SOUTH,
-                Pipes::EAST => out += Vec2::EAST,
-                Pipes::WEST => out += Vec2::WEST,
+                Pipes::NORTH => out += Self::NORTH,
+                Pipes::SOUTH => out += Self::SOUTH,
+                Pipes::EAST => out += Self::EAST,
+                Pipes::WEST => out += Self::WEST,
                 _ => {}
             };
         }
@@ -43,10 +43,10 @@ impl Add<Pipes> for Vec2 {
     }
 }
 
-impl Add<Vec2> for Pipes {
-    type Output = Vec2;
+impl Add<Vec2<i32>> for Pipes {
+    type Output = Vec2<i32>;
 
-    fn add(self, rhs: Vec2) -> Self::Output {
+    fn add(self, rhs: crate::helper::vec2::Vec2<i32>) -> Self::Output {
         return rhs + self;
     }
 }
