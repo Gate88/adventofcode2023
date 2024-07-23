@@ -1,4 +1,7 @@
-use std::ops::{Add, AddAssign, Mul, Neg, Sub};
+use std::{
+    iter::Sum,
+    ops::{Add, AddAssign, Mul, Neg, Sub},
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Vec2<T> {
@@ -6,13 +9,16 @@ pub struct Vec2<T> {
     pub y: T,
 }
 
+impl<T> Vec2<T> {
+    pub fn new(x: T, y: T) -> Self {
+        Vec2 { x, y }
+    }
+}
+
 impl<T> Vec2<T>
 where
     T: Neg<Output = T> + Copy,
 {
-    pub fn new(x: T, y: T) -> Self {
-        Vec2 { x, y }
-    }
     pub fn invert(&self) -> Self {
         Vec2 {
             x: -self.x,
@@ -87,5 +93,14 @@ where
             x: self.x - rhs.x,
             y: self.y - rhs.y,
         }
+    }
+}
+
+impl<T> Sum for Vec2<T>
+where
+    T: Default + Add<Output = T>,
+{
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(Vec2::new(T::default(), T::default()), |a, v| a + v)
     }
 }
